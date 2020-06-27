@@ -1,10 +1,13 @@
 require_relative './api'
 require_relative './members'
+require_relative './absences_helper'
 
 module CmChallenge
   class Absences
+    extend AbsencesHelper
     class << self
       def to_ical
+        generate_ical_data_from_absences(with_names)
       end
 
       def with_names
