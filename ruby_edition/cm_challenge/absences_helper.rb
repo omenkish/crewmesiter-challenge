@@ -1,4 +1,5 @@
 require 'date'
+require 'icalendar'
 
 module AbsencesHelper
   def generate_ical_data_from_absences(absences)
