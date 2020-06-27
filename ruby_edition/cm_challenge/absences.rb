@@ -10,6 +10,10 @@ module CmChallenge
         generate_ical_data_from_absences(with_names)
       end
 
+      def generate_ical_file(path_to_file:, data: to_ical)
+        write_data_to_file(data: data, path_to_file: path_to_file)
+      end
+
       def with_names
         absences = Api.absences
         absences.each do |absence|

@@ -14,4 +14,12 @@ RSpec.describe 'Absences' do
       expect(ical).to include("END:VCALENDAR")
     end
   end
+
+  describe '#generate_ical_file' do
+    it 'reads to .ical file' do
+      allow(File).to receive(:write)
+      CmChallenge::Absences.generate_ical_file(path_to_file: 'hello.ical', data: 'ical data')
+      expect(File).to have_received(:write).with('hello.ical', 'ical data').once
+    end
+  end
 end
