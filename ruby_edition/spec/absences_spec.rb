@@ -42,4 +42,21 @@ RSpec.describe CmChallenge::Absences do
       expect(absence_status).to eq("#{employee[:name]} is currently NOT absent")
     end
   end
+
+  describe '#between' do
+    let(:response) { CmChallenge::Absences.between(start_date: '2017-02-10', end_date: '2017-12-12') }
+    it 'returns a list of absences between two dates' do
+      expect(response).to respond_to(:each)
+    end
+    it { expect(response).to all(have_key(:id)) }
+
+    context 'when no data matches the search query' do
+      let(:response) { CmChallenge::Absences.between(start_date: '2020-02-10', end_date: '2020-12-12') }
+      it 'returns an empty array' do
+        expect(response).to respond_to(:each)
+      end
+
+      it { expect(response).to be_empty }
+    end
+  end
 end
