@@ -34,6 +34,12 @@ module CmChallenge
         "#{employee[:name]} is currently NOT absent"
       end
 
+      def between(start_date:, end_date:)
+        all_with_names.select do |absence| format_date(date: absence[:start_date]) >= format_date(date: start_date) &&
+            format_date(date: absence[:end_date]) <= format_date(date: end_date)
+        end
+      end
+
       private
 
       def get_absentee_from_members(absentee_id:)
