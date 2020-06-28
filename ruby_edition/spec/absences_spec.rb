@@ -1,10 +1,11 @@
 require_relative '../cm_challenge/absences'
+require_relative '../cm_challenge/api'
 
-RSpec.describe 'Absences' do
-  describe '#with_names' do
-    let(:absences) { CmChallenge::Absences.with_names }
+RSpec.describe CmChallenge::Absences do
+  describe '#all_with_names' do
+    let(:absences) { CmChallenge::Absences.all_with_names }
     it { expect(absences).to respond_to(:each) }
-    it { expect(absences).to all(have_key(:name)) }
+    it { expect(absences).to all(have_key(:employee_name)) }
   end
 
   describe '#to_ical' do
@@ -20,6 +21,25 @@ RSpec.describe 'Absences' do
       allow(File).to receive(:write)
       CmChallenge::Absences.generate_ical_file(path_to_file: 'hello.ical', data: 'ical data')
       expect(File).to have_received(:write).with('hello.ical', 'ical data').once
+    end
+  end
+
+  describe '#find_employee_absences' do
+    let(:absentee) { CmChallenge::Api.members.first }
+    let(:employee_absences) { CmChallenge::Absences.find_employee_absences(employee_id: absentee[:user_id]) }
+
+    it { expect(employee_absences).to respond_to(:each) }
+    it { expect(employee_absences).to all(have_key(:id)) }
+    it { expect(employee_absences).to all(have_key(:employee_name)) }
+    it { expect(employee_absences).to all(have_key(:user_id)) }
+  end
+
+  describe '#employee_vacation_status' do
+    let(:employee) { CmChallenge::Api.members.first }
+    let(:absence_status) { CmChallenge::Absences.employee_vacation_status(employee: employee, status: 'vacation') }
+
+    it 'prints current leave status of employee' do
+      expect(absence_status).to eq("#{employee[:name]} is currently NOT absent")
     end
   end
 end
