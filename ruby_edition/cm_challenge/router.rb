@@ -1,6 +1,5 @@
 require 'json'
 require_relative './absences'
-require 'pry'
 
 class Router
   attr_reader :request
@@ -15,13 +14,7 @@ class Router
 
     return not_found unless path == '' || path == '/'
 
-    unless query_string
-      params = {
-          "type"=> "application/calendar; charset=utf-8",
-          "disposition" => " attachment; filename=\"absences.ics\""
-      }
-      return [200, { "Content-Type"=> params['type'], "Content-disposition" => params['disposition']}, [CmChallenge::Absences.to_ical]]
-    end
+    return download_absences if query_string.empty?
 
     if query_string_is_correct?(query_string: query_string)
       return get_user_absences(query_string: query_string) if query_string.start_with?('userId')
@@ -33,6 +26,14 @@ class Router
   end
 
   private
+
+  def download_absences
+    params = {
+        "type"=> "application/calendar; charset=utf-8",
+        "disposition" => " attachment; filename=\"absences.ics\""
+    }
+    [200, { "Content-Type"=> params['type'], "Content-disposition" => params['disposition']}, [CmChallenge::Absences.to_ical]]
+  end
 
   def get_user_absences(query_string:)
     employee_id = get_integer_from_query(query: query_string)
