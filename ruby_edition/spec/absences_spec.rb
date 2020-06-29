@@ -1,6 +1,5 @@
 require_relative '../cm_challenge/absences'
 require_relative '../cm_challenge/api'
-require 'pry'
 
 RSpec.describe CmChallenge::Absences do
   describe '#all_with_names' do
