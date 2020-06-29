@@ -22,31 +22,40 @@ export const allAbsencesWithNames = async () => {
 };
 
 export const toIcal = async () => {
-  const all_absences = await allAbsencesWithNames();
-  const events = [];
+  try {
+    const all_absences = await allAbsencesWithNames();
+    const events = [];
 
-  for (let absence of all_absences) {
-    const event = {
-      start: moment(absence.startDate),
-      end: moment(absence.endDate),
-      timestamp: moment(),
-      description: `${absence.employeeName} is absent due to ${absence.type}.`,
-      summary: `${absence.employeeName}'s absence details`,
-      organizer: 'Manager <mail@example.com>'
-    };
+    for (let absence of all_absences) {
+      const event = {
+        start: moment(absence.startDate),
+        end: moment(absence.endDate),
+        timestamp: moment(),
+        description: `${absence.employeeName} is absent due to ${absence.type}.`,
+        summary: `${absence.employeeName}'s absence details`,
+        organizer: 'Manager <mail@example.com>'
+      };
 
-    events.push(event);
+      events.push(event);
+    }
+    return ical({
+      domain: 'mydomain.net',
+      prodId: '//mydomain.com//ical-generator//EN',
+      events
+    }).toString();
+  } catch (error) {
+    throw new Error(error);
   }
-  return ical({
-    domain: 'mydomain.net',
-    prodId: '//mydomain.com//ical-generator//EN',
-    events
-  }).toString();
 };
 
 export const writeIcalDataToFile = async (filename = 'absences', data = toIcal) => {
-  const absences = await  data();
-  writeFileSync(`${__dirname}/${filename}.ics`, absences)
+  try {
+    const absences = await  data();
+    writeFileSync(`${__dirname}/${filename}.ics`, absences);
+  } catch (error) {
+    throw new Error(error)
+  }
+
 };
 
 export const employeeAbsenceStatus = async (employee, absences = allAbsencesWithNames) => {
