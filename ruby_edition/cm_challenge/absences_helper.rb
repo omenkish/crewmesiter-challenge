@@ -9,7 +9,7 @@ module AbsencesHelper
       event.dtstart = Icalendar::Values::Date.new(format_date(date: absence[:start_date]))
       event.dtend = Icalendar::Values::Date.new(format_date(date: absence[:end_date]))
       event.summary = "#{absence[:employee_name].capitalize} absence details"
-      # event.description = absence_status(absence)
+      event.description = absence[:admitter_note]
       event.transp = 'TRANSPARENT'
       event.created = format_date(date: absence[:created_at], date_time: true)
     end
