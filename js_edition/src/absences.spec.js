@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { allAbsencesWithNames, employeeAbsenceStatus } from './absences';
+import { allAbsencesWithNames, employeeAbsenceStatus, toIcal, writeIcalDataToFile } from './absences';
 import { members } from './api';
 import { everyItemContainsKey} from './api.spec'
 
@@ -31,7 +31,7 @@ describe('employeeAbsenceStatus', () => {
     const response = await employeeAbsenceStatus(member);
 
     assert(response, `${member.name} is NOT absent`);
-  })
+  });
 
   const absenceData = async (member, type) => {
     const data = {
@@ -50,7 +50,7 @@ describe('employeeAbsenceStatus', () => {
       employeeName: member.name
     };
     return [data];
-  }
+  };
 
   describe('employee is on vacation', () => {
     it('prints the right message if employee is on vacation', async () => {
@@ -59,7 +59,7 @@ describe('employeeAbsenceStatus', () => {
 
       const response = await employeeAbsenceStatus(member, absenceData.bind(null, member, 'vacation'));
       assert.strictEqual(response, `${member.name} is on vacation`);
-      
+
     })
   });
 
@@ -70,7 +70,7 @@ describe('employeeAbsenceStatus', () => {
 
       const response = await employeeAbsenceStatus(member, absenceData.bind(null, member, 'sickness'));
       assert.strictEqual(response, `${member.name} is sick`);
-      
+
     })
   });
-})
+});

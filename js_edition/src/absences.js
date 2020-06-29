@@ -1,4 +1,7 @@
 import moment from 'moment';
+import ical from 'ical-generator';
+import { writeFileSync } from 'fs';
+
 import { absences, members } from './api';
 
 export const allAbsencesWithNames = async () => {
@@ -16,7 +19,35 @@ export const allAbsencesWithNames = async () => {
   } catch (error) {
     throw new Error(error);
   }
-}
+};
+
+export const toIcal = async () => {
+  const all_absences = await allAbsencesWithNames();
+  const events = [];
+
+  for (let absence of all_absences) {
+    const event = {
+      start: moment(absence.startDate),
+      end: moment(absence.endDate),
+      timestamp: moment(),
+      description: `${absence.employeeName} is absent due to ${absence.type}.`,
+      summary: `${absence.employeeName}'s absence details`,
+      organizer: 'Manager <mail@example.com>'
+    };
+
+    events.push(event);
+  }
+  return ical({
+    domain: 'mydomain.net',
+    prodId: '//mydomain.com//ical-generator//EN',
+    events
+  }).toString();
+};
+
+export const writeIcalDataToFile = async (filename = 'absences', data = toIcal) => {
+  const absences = await  data();
+  writeFileSync(`${__dirname}/${filename}.ics`, absences)
+};
 
 export const employeeAbsenceStatus = async (employee, absences = allAbsencesWithNames) => {
   const status = {
@@ -24,35 +55,33 @@ export const employeeAbsenceStatus = async (employee, absences = allAbsencesWith
     sickness: (member) => `${member} is sick`,
     default: (member) => `${member} is currently NOT absent`,
   };
-  
+
   try {
     const allAbsences = await absences();
     const absence = employeeAbsence(employee.userId, allAbsences);
-  
+
     // Return absence type if employee has any absence or null otherwise
     const type = absence && absence.type || null;
-  
+
     return status[type || 'default'](employee.name)
   } catch (error) {
     throw new Error(error);
   }
-}
+};
 
 const getMemberById = async (id) => {
   try {
     let allMembers = await members();
-    const employee = allMembers.find((member) => member.userId === id)
-    return employee
+    return allMembers.find((member) => member.userId === id);
   } catch (error) {
     throw new Error(error);
   }
-
-}
+};
 
 const employeeAbsences = (employeeId, absences) => {
-  
+
   return absences.filter((absence) => absence.userId === employeeId);
-}
+};
 
 const employeeAbsence = (employeeId, absences) => {
   try {
@@ -62,5 +91,4 @@ const employeeAbsence = (employeeId, absences) => {
   } catch (error) {
     throw new Error(error);
   }
-  
-}
+};
