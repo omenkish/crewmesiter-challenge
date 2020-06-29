@@ -1,5 +1,6 @@
 require_relative '../cm_challenge/absences'
 require_relative '../cm_challenge/api'
+require 'pry'
 
 RSpec.describe CmChallenge::Absences do
   describe '#all_with_names' do
@@ -19,8 +20,8 @@ RSpec.describe CmChallenge::Absences do
   describe '#generate_ical_file' do
     it 'reads to .ical file' do
       allow(File).to receive(:write)
-      CmChallenge::Absences.generate_ical_file(path_to_file: 'hello.ical', data: 'ical data')
-      expect(File).to have_received(:write).with('hello.ical', 'ical data').once
+      CmChallenge::Absences.generate_ical_file(file_name: 'hello.ical', data: 'ical data')
+      expect(File).to have_received(:write).once
     end
   end
 
