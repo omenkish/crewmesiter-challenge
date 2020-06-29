@@ -10,8 +10,8 @@ module CmChallenge
         generate_ical_data_from_absences(all_with_names)
       end
 
-      def generate_ical_file(path_to_file: 'cm_challange/absences.ics', data: to_ical)
-        write_data_to_file(data: data, path_to_file: path_to_file)
+      def generate_ical_file(file_name: 'absences.ics', data: to_ical)
+        write_data_to_file(data: data, file_name: file_name)
       end
 
       def all_with_names

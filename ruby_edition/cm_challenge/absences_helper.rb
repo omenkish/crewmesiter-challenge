@@ -28,7 +28,8 @@ module AbsencesHelper
     DateTime.parse(date)
   end
 
-  def write_data_to_file(path_to_file:, data:)
-    File.write(path_to_file, data)
+  def write_data_to_file(file_name:, data:)
+    file = File.join(File.dirname(__FILE__), file_name)
+    File.write(file, data)
   end
 end
